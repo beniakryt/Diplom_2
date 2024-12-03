@@ -1,1 +1,1 @@
-git init# Diplom_2
+# Diplom_2
