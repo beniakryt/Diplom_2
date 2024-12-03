@@ -1,22 +1,26 @@
 import requests
 import allure
+from data.constants import BASE_URL, ERROR_MESSAGES
+from data.endpoints import ENDPOINTS
 
-BASE_URL = "https://stellarburgers.nomoreparties.site/api"
-
+@allure.feature("Изменение данных пользователя")
 class TestUpdateUser:
 
-    @allure.feature("Изменение данных пользователя")
-    @allure.story("Изменение данных с авторизацией")
+    @allure.title("Изменение данных с авторизацией")
     def test_update_user_with_auth(self, auth_header):
-        user_data = {"name": "Updated User Name"}
-        response = requests.patch(f"{BASE_URL}/auth/user", json=user_data, headers=auth_header)
+        response = requests.patch(
+            f"{BASE_URL}{ENDPOINTS['user']}",
+            json={"name": "Updated User Name"},
+            headers=auth_header
+        )
         assert response.status_code == 200
         assert response.json()["user"]["name"] == "Updated User Name"
 
-    @allure.feature("Изменение данных пользователя")
-    @allure.story("Изменение данных без авторизации")
+    @allure.title("Попытка изменить данные без авторизации")
     def test_update_user_without_auth(self):
-        user_data = {"name": "yuriibenia"}
-        response = requests.patch(f"{BASE_URL}/auth/user", json=user_data)
+        response = requests.patch(
+            f"{BASE_URL}{ENDPOINTS['user']}",
+            json={"name": "Unauthorized Update"}
+        )
         assert response.status_code == 401
-        assert response.json()["message"] == "You should be authorised"
+        assert response.json()["message"] == ERROR_MESSAGES["unauthorized"]
